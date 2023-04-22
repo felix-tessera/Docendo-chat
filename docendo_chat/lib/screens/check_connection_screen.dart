@@ -22,7 +22,7 @@ class _CheckConnectionScreenState extends State<CheckConnectionSceen> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => AuthScreen()));
     } else {
-      checkData = Text('Отсутствует подключение к интернету');
+      checkData = const Text('Отсутствует подключение к интернету');
       setState(() {});
     }
   }
