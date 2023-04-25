@@ -1,6 +1,10 @@
+import 'package:docendo_chat/screens/account_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'auth_screen.dart';
+import '..\\firebase_options.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class CheckConnectionSceen extends StatefulWidget {
   const CheckConnectionSceen({super.key});
@@ -10,6 +14,8 @@ class CheckConnectionSceen extends StatefulWidget {
 }
 
 class _CheckConnectionScreenState extends State<CheckConnectionSceen> {
+  DatabaseReference ref = FirebaseDatabase.instance.ref();
+
   @override
   initState() {
     super.initState();
@@ -19,8 +25,14 @@ class _CheckConnectionScreenState extends State<CheckConnectionSceen> {
   _checkConnection() async {
     bool isConnected = await InternetConnectionChecker().hasConnection;
     if (isConnected) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => AuthScreen()));
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => AccountScreen(user: user)));
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AuthScreen()));
+      }
     } else {
       checkData = const Text('Отсутствует подключение к интернету');
       setState(() {});
