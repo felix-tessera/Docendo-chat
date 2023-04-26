@@ -24,7 +24,7 @@ class AuthScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             const SignInButtonWidget(),
@@ -50,7 +50,7 @@ class SignInButtonWidget extends StatelessWidget {
         onPressed: () async {
           User? user = await AuthService.signInWithGoogle();
           if (user != null) {
-            Navigator.push(
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                     builder: (context) => AccountScreen(user: user)));

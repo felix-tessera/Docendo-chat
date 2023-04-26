@@ -27,11 +27,11 @@ class _CheckConnectionScreenState extends State<CheckConnectionSceen> {
     if (isConnected) {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        Navigator.push(context,
+        Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => AccountScreen(user: user)));
       } else {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AuthScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const AuthScreen()));
       }
     } else {
       checkData = const Text('Отсутствует подключение к интернету');

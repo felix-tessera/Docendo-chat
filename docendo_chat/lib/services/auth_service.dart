@@ -1,4 +1,6 @@
+import 'package:docendo_chat/screens/auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -36,5 +38,18 @@ class AuthService {
       }
     }
     return user;
+  }
+
+  static Future<void> signOut({required BuildContext context}) async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    debugPrint('выход');
+    try {
+      await googleSignIn.signOut();
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: ((context) => AuthScreen())));
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }
