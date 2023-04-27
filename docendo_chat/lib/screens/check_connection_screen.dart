@@ -1,4 +1,5 @@
 import 'package:docendo_chat/screens/account_screen.dart';
+import 'package:docendo_chat/screens/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -28,7 +29,7 @@ class _CheckConnectionScreenState extends State<CheckConnectionSceen> {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => AccountScreen(user: user)));
+            MaterialPageRoute(builder: (context) => MainScreen(user: user)));
       } else {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const AuthScreen()));

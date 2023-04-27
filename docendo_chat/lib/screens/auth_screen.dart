@@ -1,4 +1,5 @@
 import 'package:docendo_chat/screens/account_screen.dart';
+import 'package:docendo_chat/screens/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
@@ -53,7 +54,7 @@ class SignInButtonWidget extends StatelessWidget {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => AccountScreen(user: user)));
+                    builder: (context) => MainScreen(user: user)));
           }
         },
         child: Row(

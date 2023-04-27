@@ -1,7 +1,10 @@
+import 'package:docendo_chat/screens/news_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import '../services/auth_service.dart';
+import 'messages_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   AccountScreen({super.key, required this.user});
@@ -14,6 +17,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   User? user;
+
   _AccountScreenState(this.user);
 
   @override
@@ -286,7 +290,7 @@ class AccountSettingsWidget extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         )
       ],
