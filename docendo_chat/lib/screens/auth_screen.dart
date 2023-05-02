@@ -1,6 +1,7 @@
-import 'package:docendo_chat/screens/account_screen.dart';
 import 'package:docendo_chat/screens/main_screen.dart';
+import 'package:docendo_chat/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
@@ -28,7 +29,7 @@ class AuthScreen extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            const SignInButtonWidget(),
+            SignInButtonWidget(),
           ],
         ),
       ),
@@ -37,9 +38,11 @@ class AuthScreen extends StatelessWidget {
 }
 
 class SignInButtonWidget extends StatelessWidget {
-  const SignInButtonWidget({
+  SignInButtonWidget({
     super.key,
   });
+
+  DatabaseReference usersRef = FirebaseDatabase.instance.ref('users');
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +54,8 @@ class SignInButtonWidget extends StatelessWidget {
         onPressed: () async {
           User? user = await AuthService.signInWithGoogle();
           if (user != null) {
+            UserService(user: user).postUser();
+
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
