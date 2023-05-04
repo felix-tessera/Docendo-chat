@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:docendo_chat/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import '../models/chat.dart';
 import '../models/user.dart' as u;
+import '../screens/messages_screen.dart';
 
 class ChatService {
+  Function callback;
+  ChatService({required this.callback});
+
   final DatabaseReference createChatRef =
       FirebaseDatabase.instance.ref('chats');
-  final DatabaseReference membersRef = FirebaseDatabase.instance.ref('members');
   User? currentUser = FirebaseAuth.instance.currentUser;
 
   createChat(String friendEmail) async {
@@ -19,30 +24,44 @@ class ChatService {
       'members': [friendEmail, (currentUser?.email).toString()],
       'lastMessage': ''
     });
-    DatabaseReference friendRef = FirebaseDatabase.instance.ref();
-    final friendSnapshot = await friendRef
-        .child('users')
-        .orderByChild('mail')
-        .equalTo(friendEmail)
-        .get();
-    String friendJson = jsonEncode(friendSnapshot.value);
-    final friendMap = jsonDecode(friendJson);
-    u.User friend = u.User.fromJson(friendMap);
-    final friendKey = friend.key;
-    friendRef.child('users/$friendKey').set({'chats/0': createChatPush.key});
-    debugPrint('успешно');
-    // final friendKey = friendSnapshot.snapshot.key;
   }
 
   getChats() async {
-    final DatabaseReference chats = FirebaseDatabase.instance.ref('chats');
-
-    chats
-        .orderByChild('members')
-        .equalTo(currentUser?.email.toString())
+    final DatabaseReference chatsRef = FirebaseDatabase.instance.ref('chats');
+    List<Chat> chats = [];
+    chatsWidgets.clear();
+    chatsData.clear();
+    chats.clear();
+    chatsRef
+        .orderByValue()
+        .startAt(currentUser?.email)
         .onChildAdded
-        .listen((event) {
+        .listen((event) async {
+      debugPrint('найден ' + event.snapshot.key.toString());
       debugPrint(event.snapshot.value.toString());
+      String jsonChat = jsonEncode(event.snapshot.value);
+      final mapChat = jsonDecode(jsonChat);
+      Chat chat = Chat.fromJson(mapChat);
+      chats.add(chat);
+      debugPrint('first member' + chat.members.first);
+      debugPrint('chatsData ' + (chatsData.length).toString());
+      chatsData = chats;
+
+      // String currentChatFriendEmail = chats.last.members
+      //     .where((element) =>
+      //         element != FirebaseAuth.instance.currentUser?.email.toString())
+      //     .toString();
+
+      // final currentChatFriend =
+      //     await UserService(user: FirebaseAuth.instance.currentUser)
+      //         .searchFriend(currentChatFriendEmail);
+
+      chatsWidgets.add(ChatWidget(
+        chat: chatsData.last,
+        //friend: currentChatFriend,
+      ));
+      callback();
     });
+    //chatsData = chats;
   }
 }

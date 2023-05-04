@@ -4,15 +4,14 @@ class User {
   final String mail;
   final String imageUrl;
   final List<String?> friends;
-  final List<String?> chats;
 
-  User(
-      {required this.key,
-      required this.name,
-      required this.mail,
-      required this.imageUrl,
-      required this.friends,
-      required this.chats});
+  User({
+    required this.key,
+    required this.name,
+    required this.mail,
+    required this.imageUrl,
+    required this.friends,
+  });
 
   Map<String, dynamic> toJson(User user) {
     return {
@@ -21,7 +20,6 @@ class User {
       'mail': user.mail,
       'imageUrl': imageUrl,
       'friends': user.friends,
-      'chats': user.chats
     };
   }
 
@@ -31,7 +29,6 @@ class User {
         name: json['name'],
         mail: json['mail'],
         imageUrl: json['imageUrl'],
-        friends: (json['friends'] as List).cast<String?>(),
-        chats: (json['chats'] as List).cast<String?>());
+        friends: (json['friends'] as List).cast<String?>());
   }
 }

@@ -27,7 +27,6 @@ class UserService {
           'mail': (user?.email).toString(),
           'imageUrl': (user?.photoURL).toString(),
           'friends': <String>[''],
-          'chats': <String>['']
         });
       } else {
         debugPrint('Пользователь уже существует');
@@ -35,15 +34,11 @@ class UserService {
     });
   }
 
-  getUserFriend(String email) async {}
-
-  addChatToUser() async {}
-
   Future<u.User?> searchFriend(String email) async {
     final searchFriendRef = FirebaseDatabase.instance.ref();
     final completer = Completer<u.User?>();
 
-    final snapshot = await searchFriendRef
+    final snapshot = searchFriendRef
         .child('users')
         .orderByChild('mail')
         .equalTo(email)
@@ -64,5 +59,29 @@ class UserService {
     final friend = await completer.future;
     debugPrint(friend?.name.toString());
     return friend;
+  }
+
+  Future<u.User?> searchFriendForChats(String email) async {
+    final searchFriendRef = FirebaseDatabase.instance.ref();
+    final u.User? friend;
+
+    final snapshot = await searchFriendRef
+        .child('users')
+        .orderByChild('mail')
+        .equalTo(email)
+        .get();
+    if (snapshot.exists) {
+      debugPrint('snapshot ' + snapshot.value.toString());
+      final data = snapshot.children.first.value;
+      String friendJson = jsonEncode(data);
+      final friendMap = jsonDecode(friendJson);
+
+      friend = u.User.fromJson(friendMap);
+      debugPrint('dsfdsfdsfsdfdsfdsfdsfdsf' + (friend.name).toString());
+
+      return friend;
+    } else {
+      debugPrint('Не найдено');
+    }
   }
 }

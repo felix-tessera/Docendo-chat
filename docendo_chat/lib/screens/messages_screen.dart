@@ -4,6 +4,7 @@ import 'package:docendo_chat/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../models/chat.dart';
 import '../models/user.dart' as u;
 
 class MassagesScreen extends StatefulWidget {
@@ -13,16 +14,45 @@ class MassagesScreen extends StatefulWidget {
   State<MassagesScreen> createState() => _MassagesScreenState();
 }
 
+List<Chat> chatsData = [];
+List<Widget> chatsWidgets = [];
+
 class _MassagesScreenState extends State<MassagesScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   bool _searching = false;
   u.User? friend;
-  void _toggleSearch() {
+  _toggleSearch() {
     setState(() {
       _searching = !_searching;
       debugPrint(friend?.name.toString());
+      debugPrint('chatsWidgets ' + chatsWidgets.length.toString());
     });
   }
+
+  loadData() {
+    setState(() {
+      debugPrint('state upd');
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+    ChatService(callback: loadData).getChats();
+  }
+
+  // List<Widget> _setChats() {
+  //   chatsWidgets.clear();
+  //   chatsData.forEach((chat) {
+  //     chatsWidgets.add(ChatWidget(
+  //       chat: chat,
+  //     ));
+  //   });
+  //   debugPrint('cWIDGETS ' + chatsWidgets.length.toString());
+  //   debugPrint('cDATA ' + (chatsData.length).toString());
+  //   setState(() {});
+  //   return chatsWidgets;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +68,7 @@ class _MassagesScreenState extends State<MassagesScreen> {
                   onSubmitted: (email) async {
                     friend = await UserService(user: user).searchFriend(email);
                     debugPrint(friend?.name.toString());
+                    debugPrint(DateTime.now().toString());
                     setState(() {});
                   },
                 )
@@ -64,17 +95,48 @@ class _MassagesScreenState extends State<MassagesScreen> {
         body: _searching
             ? FindedFriendWidget(friend: friend)
             : ListView(
-                children: [ChatsWidget()],
+                children: chatsWidgets
+                    .toList(), //TODO: запретить создание нескольких чатов в одним человеком
               ));
   }
 }
 
-class ChatsWidget extends StatelessWidget {
+class ChatWidget extends StatefulWidget {
+  final Chat chat;
+  const ChatWidget({super.key, required this.chat});
+
+  @override
+  State<ChatWidget> createState() => _ChatWidgetState(chat: chat);
+}
+
+class _ChatWidgetState extends State<ChatWidget> {
   u.User? friend;
+  Chat chat;
 
-  ChatsWidget({super.key});
+  @override
+  initState() {
+    super.initState();
+    getCurrentChatFriend();
+  }
 
-  ImageProvider setFriendAvatar() {
+  getCurrentChatFriend() async {
+    String currentChatFriendEmail = '';
+    chat.members.forEach((element) {
+      if (element != FirebaseAuth.instance.currentUser?.email.toString()) {
+        currentChatFriendEmail = element;
+      }
+    });
+    friend = await UserService(user: FirebaseAuth.instance.currentUser)
+        .searchFriendForChats(currentChatFriendEmail);
+
+    debugPrint('friend email  ${chat.members[0]}');
+    setState(() {});
+    // debugPrint('friend  ${friend?.name.toString()}');
+  }
+
+  _ChatWidgetState({required this.chat, this.friend});
+
+  ImageProvider _setFriendAvatar() {
     if ((friend?.imageUrl) == null) {
       return Image.asset('assets/images/docendo_logo_avatar.png').image;
     } else {
@@ -82,17 +144,20 @@ class ChatsWidget extends StatelessWidget {
     }
   }
 
+  Widget _setFriendName() {
+    String name = (friend?.name != null) ? (friend?.name).toString() : '';
+    return Text(name);
+  }
+
   @override
   Widget build(BuildContext context) {
-    ChatService().getChats();
-
     return Row(
       children: [
         Container(
           width: 80,
           height: 80,
           child: CircleAvatar(
-            backgroundImage: setFriendAvatar(),
+            backgroundImage: _setFriendAvatar(),
           ),
         ),
         Expanded(
@@ -102,7 +167,7 @@ class ChatsWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text((friend?.name).toString()),
+                  _setFriendName(),
                   const Spacer(),
                   Container(
                     color: Colors.yellow,
@@ -111,11 +176,12 @@ class ChatsWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                color: Colors.grey,
-                width: 40,
-                height: 40,
-              ),
+              //TODO: отображать последнее сообщение
+              Text(chat.members
+                  .where((element) =>
+                      element !=
+                      FirebaseAuth.instance.currentUser?.email.toString())
+                  .toString()),
             ],
           ),
         ),
@@ -138,13 +204,38 @@ class FindedFriendWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ListView(
+      children: friend == null ? [] : [FindedFriendTile(friend: friend)],
+    );
+  }
+}
+
+class FindedFriendTile extends StatelessWidget {
+  u.User? friend;
+
+  FindedFriendTile({super.key, required this.friend});
+  ImageProvider _setFriendAvatar() {
+    if ((friend?.imageUrl) == null) {
+      return Image.asset('assets/images/docendo_logo_avatar.png').image;
+    } else {
+      return Image.network((friend?.imageUrl).toString()).image;
+    }
+  }
+
+  Widget _setFriendName() {
+    String name = (friend?.name != null) ? (friend?.name).toString() : '';
+    return Text(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
           width: 80,
           height: 80,
           child: CircleAvatar(
-            backgroundImage: setFriendAvatar(),
+            backgroundImage: _setFriendAvatar(),
           ),
         ),
         Expanded(
@@ -163,7 +254,8 @@ class FindedFriendWidget extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  ChatService().createChat((friend?.mail).toString());
+                  ChatService(callback: () {})
+                      .createChat((friend?.mail).toString());
                   Navigator.push(
                       context,
                       MaterialPageRoute(
