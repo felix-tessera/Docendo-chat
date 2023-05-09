@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:docendo_chat/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -46,16 +44,6 @@ class ChatService {
       debugPrint('first member' + chat.members.first);
       debugPrint('chatsData ' + (chatsData.length).toString());
       chatsData = chats;
-
-      // String currentChatFriendEmail = chats.last.members
-      //     .where((element) =>
-      //         element != FirebaseAuth.instance.currentUser?.email.toString())
-      //     .toString();
-
-      // final currentChatFriend =
-      //     await UserService(user: FirebaseAuth.instance.currentUser)
-      //         .searchFriend(currentChatFriendEmail);
-
       chatsWidgets.add(ChatWidget(
         chat: chatsData.last,
         //friend: currentChatFriend,
@@ -64,4 +52,35 @@ class ChatService {
     });
     //chatsData = chats;
   }
+
+  sendMessage({
+    required String message,
+    required String chatId,
+    required String sender,
+  }) async {
+    DateTime currentTime = DateTime.now();
+    int currentHour = currentTime.hour;
+    int currentMinute = currentTime.minute;
+    String messageTime = '$currentHour:$currentMinute';
+
+    final DatabaseReference messagesRef =
+        FirebaseDatabase.instance.ref('messages/$chatId');
+    final messagesPush = messagesRef.push();
+    messagesPush.set({
+      'sender': sender,
+      'message': message,
+      'time': messageTime,
+    });
+  }
+
+  // getMessages({required String chatId}) async {
+  //   final DatabaseReference messagesRef =
+  //       FirebaseDatabase.instance.ref('messages/$chatId');
+  //   messagesRef.orderByChild('sender').onChildAdded.listen((event) {
+  //     debugPrint(event.snapshot.value.toString());
+  //     final messageJson = jsonEncode(event.snapshot.value);
+  //     final messageMap = jsonDecode(messageJson);
+  //     Message message = Message.fromJson(messageMap);
+  //   });
+  // }
 }

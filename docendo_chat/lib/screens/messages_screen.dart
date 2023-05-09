@@ -41,19 +41,6 @@ class _MassagesScreenState extends State<MassagesScreen> {
     ChatService(callback: loadData).getChats();
   }
 
-  // List<Widget> _setChats() {
-  //   chatsWidgets.clear();
-  //   chatsData.forEach((chat) {
-  //     chatsWidgets.add(ChatWidget(
-  //       chat: chat,
-  //     ));
-  //   });
-  //   debugPrint('cWIDGETS ' + chatsWidgets.length.toString());
-  //   debugPrint('cDATA ' + (chatsData.length).toString());
-  //   setState(() {});
-  //   return chatsWidgets;
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,41 +138,52 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          child: CircleAvatar(
-            backgroundImage: _setFriendAvatar(),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                      friend: friend,
+                      chat: chat,
+                    )));
+      },
+      child: Row(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            child: CircleAvatar(
+              backgroundImage: _setFriendAvatar(),
+            ),
           ),
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  _setFriendName(),
-                  const Spacer(),
-                  Container(
-                    color: Colors.yellow,
-                    width: 40,
-                    height: 40,
-                  ),
-                ],
-              ),
-              //TODO: отображать последнее сообщение
-              Text(chat.members
-                  .where((element) =>
-                      element !=
-                      FirebaseAuth.instance.currentUser?.email.toString())
-                  .toString()),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    _setFriendName(),
+                    const Spacer(),
+                    Container(
+                      color: Colors.yellow,
+                      width: 40,
+                      height: 40,
+                    ),
+                  ],
+                ),
+                //TODO: отображать последнее сообщение
+                Text(chat.members
+                    .where((element) =>
+                        element !=
+                        FirebaseAuth.instance.currentUser?.email.toString())
+                    .toString()),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -212,6 +210,8 @@ class FindedFriendWidget extends StatelessWidget {
 
 class FindedFriendTile extends StatelessWidget {
   u.User? friend;
+
+  IconData addIcon = Icons.add_circle;
 
   FindedFriendTile({super.key, required this.friend});
   ImageProvider _setFriendAvatar() {
@@ -256,15 +256,16 @@ class FindedFriendTile extends StatelessWidget {
                 onPressed: () {
                   ChatService(callback: () {})
                       .createChat((friend?.mail).toString());
+                  addIcon = Icons.check;
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ChatScreen(friend: friend)));
+                          builder: (context) => MassagesScreen()));
                 },
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0)))),
-                child: const Icon(Icons.chat_rounded),
+                child: Icon(addIcon),
               ),
             ],
           ),

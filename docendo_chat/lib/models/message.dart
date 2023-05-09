@@ -3,5 +3,13 @@ class Message {
   final String time;
   final String sender;
 
-  Message(this.message, this.time, this.sender);
+  Message({required this.message, required this.time, required this.sender});
+
+  static Message fromJson(Map<String, dynamic> json) {
+    return Message(
+      message: json['message'],
+      time: json['time'],
+      sender: json['sender'],
+    );
+  }
 }

@@ -1,15 +1,26 @@
-import 'package:docendo_chat/screens/news_screen.dart';
+import 'package:docendo_chat/screens/qr_generate_screen.dart';
+import 'package:docendo_chat/services/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
 import '../services/auth_service.dart';
-import 'messages_screen.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class AccountScreen extends StatefulWidget {
   AccountScreen({super.key, required this.user});
 
   User? user;
+
+  static SnackBar customSnackBar({required String content}) {
+    return SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        content,
+        style: TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255), letterSpacing: 0.5),
+      ),
+    );
+  }
 
   @override
   State<AccountScreen> createState() => _AccountScreenState(user);
@@ -124,53 +135,73 @@ class SettingsFriendsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          SettingsDeviderWidget(),
-          SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Друзья',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0XFF888888)),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const SettingsDeviderWidget(),
+      const SizedBox(
+        height: 10,
+      ),
+      const Padding(
+        padding: EdgeInsets.only(left: 27),
+        child: Text(
+          'Друзья',
+          style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Color(0XFF888888)),
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      GestureDetector(
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => QRGenerateScreen()));
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 27),
+          child: Text(
+            'Показать свой QR',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Показать свой QR',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      GestureDetector(
+        onTap: () async {
+          String barcodeScanRes;
+
+          barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+              "#38ff63", "Cancel", true, ScanMode.QR);
+          if (barcodeScanRes != '-1') {
+            ChatService(callback: () {}).createChat(barcodeScanRes);
+            ScaffoldMessenger.of(context).showSnackBar(
+              AccountScreen.customSnackBar(
+                content: 'Чат с пользователем создан',
               ),
+            );
+          } else {}
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 27),
+          child: Text(
+            'Сканировать QR друга',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Сканировать QR друга',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          )
-        ]);
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      )
+    ]);
   }
 }
 
