@@ -1,3 +1,4 @@
+import 'package:docendo_chat/screens/messages_screen.dart';
 import 'package:docendo_chat/screens/qr_generate_screen.dart';
 import 'package:docendo_chat/services/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,6 +31,12 @@ class _AccountScreenState extends State<AccountScreen> {
   User? user;
 
   _AccountScreenState(this.user);
+
+  @override
+  void initState() {
+    ChatService(callback: () {}).getChats(mounted);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,14 +185,19 @@ class SettingsFriendsWidget extends StatelessWidget {
 
           barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
               "#38ff63", "Cancel", true, ScanMode.QR);
-          if (barcodeScanRes != '-1') {
+          if (barcodeScanRes != '-1' &&
+              chatsData.every(
+                  (element) => !element.members.contains(barcodeScanRes))) {
             ChatService(callback: () {}).createChat(barcodeScanRes);
             ScaffoldMessenger.of(context).showSnackBar(
               AccountScreen.customSnackBar(
                 content: 'Чат с пользователем создан',
               ),
             );
-          } else {}
+          } else {
+            debugPrint(
+                'Чат создать не удалось, либо такой чат уже сушествует.');
+          }
         },
         child: const Padding(
           padding: EdgeInsets.only(left: 27),

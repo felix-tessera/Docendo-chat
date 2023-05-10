@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:docendo_chat/services/chat_service.dart';
+import 'package:docendo_chat/services/notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +67,11 @@ class _ChatScreenState extends State<ChatScreen> {
           messagesWidgets.add(MessageWidget(message: message));
         });
       }
-      _scrollToDown();
+      try {
+        _scrollToDown();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     });
   }
 
@@ -150,6 +154,11 @@ class _ChatScreenState extends State<ChatScreen> {
                           sender: (FirebaseAuth.instance.currentUser?.email)
                               .toString());
                       // Отправить сообщение
+                      //Отправка уведомления
+                      NotificationSerivce().sendNotificationOnMessage(
+                          (friend?.token).toString(),
+                          (friend?.name).toString(),
+                          _textEditingController.text);
                       _textEditingController.clear();
                     }
                   },

@@ -38,7 +38,7 @@ class _MassagesScreenState extends State<MassagesScreen> {
   @override
   initState() {
     super.initState();
-    ChatService(callback: loadData).getChats();
+    ChatService(callback: loadData).getChats(mounted);
   }
 
   @override
@@ -53,10 +53,15 @@ class _MassagesScreenState extends State<MassagesScreen> {
                     border: UnderlineInputBorder(),
                   ),
                   onSubmitted: (email) async {
-                    friend = await UserService(user: user).searchFriend(email);
-                    debugPrint(friend?.name.toString());
-                    debugPrint(DateTime.now().toString());
-                    setState(() {});
+                    if (chatsData
+                        .every((element) => !element.members.contains(email))) {
+                      friend =
+                          await UserService(user: user).searchFriend(email);
+                      setState(() {});
+                    } else {
+                      debugPrint(
+                          'Чат создать не удалось, либо такой чат уже сушествует.');
+                    }
                   },
                 )
               : const Text('Сообщения'),
@@ -83,7 +88,7 @@ class _MassagesScreenState extends State<MassagesScreen> {
             ? FindedFriendWidget(friend: friend)
             : ListView(
                 children: chatsWidgets
-                    .toList(), //TODO: запретить создание нескольких чатов в одним человеком
+                    .toList(), //TODO: запретить создание нескольких чатов с одним человеком
               ));
   }
 }
@@ -133,7 +138,10 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   Widget _setFriendName() {
     String name = (friend?.name != null) ? (friend?.name).toString() : '';
-    return Text(name);
+    return Text(
+      name,
+      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+    );
   }
 
   @override
@@ -141,12 +149,14 @@ class _ChatWidgetState extends State<ChatWidget> {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                      friend: friend,
-                      chat: chat,
-                    )));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              friend: friend,
+              chat: chat,
+            ),
+          ),
+        );
       },
       child: Row(
         children: [
@@ -174,11 +184,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                   ],
                 ),
                 //TODO: отображать последнее сообщение
-                Text(chat.members
-                    .where((element) =>
-                        element !=
-                        FirebaseAuth.instance.currentUser?.email.toString())
-                    .toString()),
+                Text(chat.lastMessage),
               ],
             ),
           ),

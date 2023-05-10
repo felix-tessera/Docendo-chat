@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../models/user.dart' as u;
 
@@ -21,12 +22,15 @@ class UserService {
       if (event.snapshot.value == null) {
         debugPrint('Пользователь записан');
         DatabaseReference postUser = usersRef.push();
-        postUser.set({
-          'key': postUser.key,
-          'name': (user?.displayName).toString(),
-          'mail': (user?.email).toString(),
-          'imageUrl': (user?.photoURL).toString(),
-          'friends': <String>[''],
+        FirebaseMessaging.instance.getToken().then((token) {
+          postUser.set({
+            'key': postUser.key,
+            'name': (user?.displayName).toString(),
+            'mail': (user?.email).toString(),
+            'imageUrl': (user?.photoURL).toString(),
+            'friends': <String>[''],
+            'token': token,
+          });
         });
       } else {
         debugPrint('Пользователь уже существует');

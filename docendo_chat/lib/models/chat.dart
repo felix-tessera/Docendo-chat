@@ -1,7 +1,7 @@
 class Chat {
   final String key;
   final List<String> members;
-  final String lastMessage;
+  String lastMessage;
 
   Chat({required this.key, required this.members, required this.lastMessage});
 

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../models/chat.dart';
+import '../models/message.dart';
 import '../models/user.dart' as u;
 import '../screens/messages_screen.dart';
 
@@ -24,7 +25,7 @@ class ChatService {
     });
   }
 
-  getChats() async {
+  getChats(bool mounted) async {
     final DatabaseReference chatsRef = FirebaseDatabase.instance.ref('chats');
     List<Chat> chats = [];
     chatsWidgets.clear();
@@ -33,24 +34,34 @@ class ChatService {
     chatsRef
         .orderByValue()
         .startAt(currentUser?.email)
+        .endAt(currentUser?.email)
         .onChildAdded
         .listen((event) async {
-      debugPrint('найден ' + event.snapshot.key.toString());
-      debugPrint(event.snapshot.value.toString());
       String jsonChat = jsonEncode(event.snapshot.value);
       final mapChat = jsonDecode(jsonChat);
       Chat chat = Chat.fromJson(mapChat);
+      //получение последнего сообщшения
+      final DatabaseReference messagesRef =
+          FirebaseDatabase.instance.ref('messages/${chat.key}');
+      messagesRef.orderByValue().limitToLast(1).onChildAdded.listen((event) {
+        final lastMessageJson = jsonEncode(event.snapshot.value);
+        debugPrint(lastMessageJson);
+        final messageMap = jsonDecode(lastMessageJson);
+        Message lastMessage = Message.fromJson(messageMap);
+        chat.lastMessage = lastMessage.message;
+        if (mounted) {
+          callback();
+        }
+      });
       chats.add(chat);
-      debugPrint('first member' + chat.members.first);
-      debugPrint('chatsData ' + (chatsData.length).toString());
       chatsData = chats;
       chatsWidgets.add(ChatWidget(
         chat: chatsData.last,
-        //friend: currentChatFriend,
       ));
-      callback();
+      if (mounted) {
+        callback();
+      }
     });
-    //chatsData = chats;
   }
 
   sendMessage({
@@ -73,14 +84,14 @@ class ChatService {
     });
   }
 
-  // getMessages({required String chatId}) async {
-  //   final DatabaseReference messagesRef =
-  //       FirebaseDatabase.instance.ref('messages/$chatId');
-  //   messagesRef.orderByChild('sender').onChildAdded.listen((event) {
-  //     debugPrint(event.snapshot.value.toString());
-  //     final messageJson = jsonEncode(event.snapshot.value);
-  //     final messageMap = jsonDecode(messageJson);
-  //     Message message = Message.fromJson(messageMap);
-  //   });
-  // }
+  getLastMessage({required String chatId}) async {
+    final DatabaseReference messagesRef =
+        FirebaseDatabase.instance.ref('messages/$chatId');
+    messagesRef.orderByChild('sender').onChildAdded.listen((event) {
+      debugPrint(event.snapshot.value.toString());
+      final messageJson = jsonEncode(event.snapshot.value);
+      final messageMap = jsonDecode(messageJson);
+      Message message = Message.fromJson(messageMap);
+    });
+  }
 }
