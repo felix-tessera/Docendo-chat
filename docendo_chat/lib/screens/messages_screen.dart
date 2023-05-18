@@ -3,6 +3,7 @@ import 'package:docendo_chat/services/chat_service.dart';
 import 'package:docendo_chat/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../models/chat.dart';
 import '../models/user.dart' as u;
@@ -128,12 +129,38 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   _ChatWidgetState({required this.chat, this.friend});
 
-  ImageProvider _setFriendAvatar() {
-    if ((friend?.imageUrl) == null) {
-      return Image.asset('assets/images/docendo_logo_avatar.png').image;
+  Future<ImageProvider<Object>> _getCachedImage() async {
+    if (friend?.imageUrl != null) {
+      dynamic file = await DefaultCacheManager()
+          .getSingleFile((friend?.imageUrl).toString());
+      return Image.file(file).image;
     } else {
-      return Image.network((friend?.imageUrl).toString()).image;
+      return Image.asset('assets/images/docendo_logo_avatar.png').image;
     }
+  }
+
+  Widget _getCircleAvatar() {
+    return FutureBuilder(
+        future: _getCachedImage(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              return CircleAvatar(
+                backgroundImage: snapshot.data,
+              );
+            } else {
+              return CircleAvatar(
+                backgroundImage:
+                    Image.asset('assets/images/docendo_logo_avatar.png').image,
+              );
+            }
+          } else {
+            return CircleAvatar(
+              backgroundImage:
+                  Image.asset('assets/images/docendo_logo_avatar.png').image,
+            );
+          }
+        });
   }
 
   Widget _setFriendName() {
@@ -158,37 +185,44 @@ class _ChatWidgetState extends State<ChatWidget> {
           ),
         );
       },
-      child: Row(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            child: CircleAvatar(
-              backgroundImage: _setFriendAvatar(),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Row(
+          children: [
+            Container(
+              width: 70,
+              height: 70,
+              child: _getCircleAvatar(),
             ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    _setFriendName(),
-                    const Spacer(),
-                    Container(
-                      color: Colors.yellow,
-                      width: 40,
-                      height: 40,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      children: [
+                        _setFriendName(),
+                        const Spacer(),
+                        Container(
+                          color: Colors.yellow,
+                          width: 40,
+                          height: 40,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                //TODO: отображать последнее сообщение
-                Text(chat.lastMessage),
-              ],
+                  ),
+                  //TODO: отображать последнее сообщение
+                  Padding(
+                    padding: const EdgeInsets.all(1.5),
+                    child: Text(chat.lastMessage),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -197,14 +231,6 @@ class _ChatWidgetState extends State<ChatWidget> {
 class FindedFriendWidget extends StatelessWidget {
   final u.User? friend;
   const FindedFriendWidget({super.key, required this.friend});
-
-  ImageProvider setFriendAvatar() {
-    if ((friend?.imageUrl) == null) {
-      return Image.asset('assets/images/docendo_logo_avatar.png').image;
-    } else {
-      return Image.network((friend?.imageUrl).toString()).image;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

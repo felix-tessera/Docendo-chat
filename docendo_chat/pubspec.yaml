@@ -45,7 +45,11 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   firebase_messaging: ^14.5.0
   http: ^0.13.6
-  flutter_local_notifications: ^14.0.0+1
+  flutter_cache_manager: ^3.3.0
+  webfeed: any
+  html: ^0.15.3
+  flutter_sms: ^2.3.3
+  firebase_phone_auth_handler: ^1.0.8
 
 dev_dependencies:
   flutter_test:

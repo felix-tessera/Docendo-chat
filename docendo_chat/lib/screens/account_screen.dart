@@ -1,8 +1,11 @@
 import 'package:docendo_chat/screens/messages_screen.dart';
 import 'package:docendo_chat/screens/qr_generate_screen.dart';
+import 'package:docendo_chat/screens/register_screen.dart';
 import 'package:docendo_chat/services/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/file.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:marquee/marquee.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -29,6 +32,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   User? user;
+  DefaultCacheManager manager = DefaultCacheManager();
 
   _AccountScreenState(this.user);
 
@@ -55,10 +59,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 top: 10,
                 right: 18,
               ),
-              child: CircleAvatar(
-                backgroundImage: NetworkImage((user?.photoURL).toString()),
-                radius: 50,
-              ),
+              child: CircleAvatarWidget(imageUrl: (user?.photoURL).toString()),
             ),
             Container(
               height: 100,
@@ -100,37 +101,41 @@ class MemorySettingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          SettingsDeviderWidget(),
-          SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Память',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0XFF888888)),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const SettingsDeviderWidget(),
+      const SizedBox(
+        height: 10,
+      ),
+      const Padding(
+        padding: EdgeInsets.only(left: 27),
+        child: Text(
+          'Память',
+          style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Color(0XFF888888)),
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      GestureDetector(
+        onTap: () async {
+          await DefaultCacheManager().emptyCache();
+          debugPrint('Кэш очищен');
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 27),
+          child: Text(
+            'Очистить кэш',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Очистить кэш',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ]);
+        ),
+      ),
+    ]);
     ;
   }
 }
@@ -182,7 +187,6 @@ class SettingsFriendsWidget extends StatelessWidget {
       GestureDetector(
         onTap: () async {
           String barcodeScanRes;
-
           barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
               "#38ff63", "Cancel", true, ScanMode.QR);
           if (barcodeScanRes != '-1' &&
@@ -224,40 +228,44 @@ class ThemeSettingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          SettingsDeviderWidget(),
-          SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Персонализация',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0XFF888888)),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const SettingsDeviderWidget(),
+      const SizedBox(
+        height: 10,
+      ),
+      const Padding(
+        padding: EdgeInsets.only(left: 27),
+        child: Text(
+          'Персонализация',
+          style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Color(0XFF888888)),
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      GestureDetector(
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const RegisterScreen()));
+        },
+        child: const Padding(
+          padding: EdgeInsets.only(left: 27),
+          child: Text(
+            'Изменить тему',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Изменить тему',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          )
-        ]);
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      )
+    ]);
   }
 }
 
@@ -357,4 +365,49 @@ Widget buildMarquee(String text) {
     accelerationCurve: Curves.linear,
     decelerationDuration: const Duration(milliseconds: 0),
   );
+}
+
+class CircleAvatarWidget extends StatelessWidget {
+  final String imageUrl;
+
+  const CircleAvatarWidget({Key? key, required this.imageUrl})
+      : super(key: key);
+
+  Future<File> getImageFile(String url) async {
+    // await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+    debugPrint(FirebaseAuth.instance.currentUser?.email);
+
+    final cacheManager = DefaultCacheManager();
+    final file = await cacheManager.getSingleFile(url);
+    return file;
+  }
+
+  Future<ImageProvider<Object>> getCachedImage(String url) async {
+    final file = await getImageFile(url);
+    return Image.file(file).image;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: getCachedImage(imageUrl),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return const Text('Error loading image');
+          } else {
+            return CircleAvatar(
+              backgroundImage: snapshot.data,
+              radius: 50,
+            );
+          }
+        } else {
+          return const CircleAvatar(
+            backgroundColor: Colors.grey,
+            radius: 50,
+          );
+        }
+      },
+    );
+  }
 }

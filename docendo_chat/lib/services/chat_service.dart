@@ -31,36 +31,33 @@ class ChatService {
     chatsWidgets.clear();
     chatsData.clear();
     chats.clear();
-    chatsRef
-        .orderByValue()
-        .startAt(currentUser?.email)
-        .endAt(currentUser?.email)
-        .onChildAdded
-        .listen((event) async {
+    chatsRef.orderByValue().onChildAdded.listen((event) async {
       String jsonChat = jsonEncode(event.snapshot.value);
       final mapChat = jsonDecode(jsonChat);
       Chat chat = Chat.fromJson(mapChat);
-      //получение последнего сообщшения
-      final DatabaseReference messagesRef =
-          FirebaseDatabase.instance.ref('messages/${chat.key}');
-      messagesRef.orderByValue().limitToLast(1).onChildAdded.listen((event) {
-        final lastMessageJson = jsonEncode(event.snapshot.value);
-        debugPrint(lastMessageJson);
-        final messageMap = jsonDecode(lastMessageJson);
-        Message lastMessage = Message.fromJson(messageMap);
-        chat.lastMessage = lastMessage.message;
+      if (chat.members.contains(currentUser?.email)) {
+        //получение последнего сообщшения
+        final DatabaseReference messagesRef =
+            FirebaseDatabase.instance.ref('messages/${chat.key}');
+        messagesRef.orderByValue().limitToLast(1).onChildAdded.listen((event) {
+          final lastMessageJson = jsonEncode(event.snapshot.value);
+          debugPrint(lastMessageJson);
+          final messageMap = jsonDecode(lastMessageJson);
+          Message lastMessage = Message.fromJson(messageMap);
+          chat.lastMessage = lastMessage.message;
+          if (mounted) {
+            callback();
+          }
+        });
+        chats.add(chat);
+        chatsData = chats;
+        chatsWidgets.add(ChatWidget(
+          chat: chatsData.last,
+        ));
         if (mounted) {
           callback();
         }
-      });
-      chats.add(chat);
-      chatsData = chats;
-      chatsWidgets.add(ChatWidget(
-        chat: chatsData.last,
-      ));
-      if (mounted) {
-        callback();
-      }
+      } else {}
     });
   }
 

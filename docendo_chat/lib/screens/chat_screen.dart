@@ -11,7 +11,6 @@ import '../models/user.dart' as u;
 class ChatScreen extends StatefulWidget {
   final u.User? friend;
   final Chat chat;
-
   const ChatScreen({super.key, required this.friend, required this.chat});
 
   @override
@@ -50,6 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _setFriendName() {
     String name = (friend?.name != null) ? (friend?.name).toString() : '';
+
     return Text(name);
   }
 

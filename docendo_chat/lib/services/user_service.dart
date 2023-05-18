@@ -79,10 +79,8 @@ class UserService {
       final data = snapshot.children.first.value;
       String friendJson = jsonEncode(data);
       final friendMap = jsonDecode(friendJson);
-
       friend = u.User.fromJson(friendMap);
-      debugPrint('dsfdsfdsfsdfdsfdsfdsfdsf' + (friend.name).toString());
-
+      debugPrint('dsfdsfdsfsdfdsfdsfdsfdsf + ${(friend.name).toString()}');
       return friend;
     } else {
       debugPrint('Не найдено');

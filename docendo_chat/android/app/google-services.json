@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "168088285530",
+    "firebase_url": "https://docendo-chat-default-rtdb.firebaseio.com",
     "project_id": "docendo-chat",
     "storage_bucket": "docendo-chat.appspot.com"
   },
@@ -14,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "168088285530-rut0a25kdhihcj32pbnfnf2brbql5fpf.apps.googleusercontent.com",
+          "client_id": "168088285530-mk57ua9dvfr8tpj72mgli7s7t0k2cd7k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.docendo_chat",
+            "certificate_hash": "ded8dc2320a7a0c4f323929e6159128a3cbe9528"
+          }
+        },
+        {
+          "client_id": "168088285530-kmbiq7ckshjo9t7nqe3ua0ujuf859f99.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,8 +36,15 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "168088285530-rut0a25kdhihcj32pbnfnf2brbql5fpf.apps.googleusercontent.com",
+              "client_id": "168088285530-kmbiq7ckshjo9t7nqe3ua0ujuf859f99.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "168088285530-9vibh5iuidmsdghqu2qs77j4jj60pvsf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.docendoChat"
+              }
             }
           ]
         }
