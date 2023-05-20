@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'services/theme_service.dart';
 
 FirebaseDatabase database = FirebaseDatabase.instance;
 
@@ -34,12 +35,29 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    themeModel.addListener(_updTheme, ['currentTheme']);
+    super.initState();
+  }
+
+  _updTheme() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData.light(), home: const CheckConnectionSceen());
+      theme: themeModel.currentTheme,
+      home: const CheckConnectionSceen(),
+    );
   }
 }

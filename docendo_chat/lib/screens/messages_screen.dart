@@ -190,8 +190,8 @@ class _ChatWidgetState extends State<ChatWidget> {
         child: Row(
           children: [
             Container(
-              width: 70,
-              height: 70,
+              width: 65,
+              height: 65,
               child: _getCircleAvatar(),
             ),
             Expanded(
@@ -202,20 +202,27 @@ class _ChatWidgetState extends State<ChatWidget> {
                   Padding(
                     padding: const EdgeInsets.all(2.0),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _setFriendName(),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: _setFriendName(),
+                        ),
                         const Spacer(),
                         Container(
-                          color: Colors.yellow,
-                          width: 40,
-                          height: 40,
+                          width: 35,
+                          height: 35,
+                          child: Text(chat.lastMessageTime),
                         ),
                       ],
                     ),
                   ),
                   //TODO: отображать последнее сообщение
                   Padding(
-                    padding: const EdgeInsets.all(1.5),
+                    padding: const EdgeInsets.only(left: 9),
                     child: Text(chat.lastMessage),
                   ),
                 ],

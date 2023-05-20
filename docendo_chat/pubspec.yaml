@@ -50,6 +50,9 @@ dependencies:
   html: ^0.15.3
   flutter_sms: ^2.3.3
   firebase_phone_auth_handler: ^1.0.8
+  property_change_notifier: ^0.3.0
+  url_launcher: ^6.1.11
+  shared_preferences: ^2.1.1
 
 dev_dependencies:
   flutter_test:
