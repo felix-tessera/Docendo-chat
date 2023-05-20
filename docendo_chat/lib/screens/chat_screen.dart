@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:docendo_chat/services/chat_service.dart';
 import 'package:docendo_chat/services/notification_service.dart';
+import 'package:docendo_chat/services/theme_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Row(children: [
           CircleAvatar(
             backgroundImage: _setFriendAvatar(),
@@ -187,9 +189,9 @@ class MessageWidget extends StatelessWidget {
 
   getMessageColor() {
     if (message.sender == FirebaseAuth.instance.currentUser?.email.toString()) {
-      return Colors.black87;
+      return themeModel.currentTheme.colorScheme.primary;
     } else {
-      return Colors.black54;
+      return themeModel.currentTheme.colorScheme.secondary;
     }
   }
 
@@ -220,7 +222,7 @@ class MessageWidget extends StatelessWidget {
         child: Container(
           decoration: getBoxDecoration(),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [

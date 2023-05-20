@@ -1,7 +1,8 @@
 import 'package:docendo_chat/screens/messages_screen.dart';
 import 'package:docendo_chat/screens/qr_generate_screen.dart';
-import 'package:docendo_chat/screens/register_screen.dart';
+import 'package:docendo_chat/screens/themes_screen.dart';
 import 'package:docendo_chat/services/chat_service.dart';
+import 'package:docendo_chat/services/theme_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/file.dart';
@@ -20,7 +21,7 @@ class AccountScreen extends StatefulWidget {
       backgroundColor: Colors.black,
       content: Text(
         content,
-        style: TextStyle(
+        style: const TextStyle(
             color: Color.fromARGB(255, 255, 255, 255), letterSpacing: 0.5),
       ),
     );
@@ -75,7 +76,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   Text(
                     (user?.email).toString(),
                     style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Color(0XFF888888)),
                   ),
@@ -111,7 +112,7 @@ class MemorySettingsWidget extends StatelessWidget {
         child: Text(
           'Память',
           style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               color: Color(0XFF888888)),
         ),
@@ -119,24 +120,33 @@ class MemorySettingsWidget extends StatelessWidget {
       const SizedBox(
         height: 10,
       ),
-      GestureDetector(
-        onTap: () async {
-          await DefaultCacheManager().emptyCache();
-          debugPrint('Кэш очищен');
-        },
-        child: const Padding(
-          padding: EdgeInsets.only(left: 27),
-          child: Text(
-            'Очистить кэш',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+      Padding(
+        padding: const EdgeInsets.only(left: 27),
+        child: Row(
+          children: [
+            const Icon(Icons.delete_outline_outlined),
+            const SizedBox(
+              width: 7,
             ),
-          ),
+            TextButton(
+              onPressed: () async {
+                await DefaultCacheManager().emptyCache();
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Кэш очищен')));
+                debugPrint('Кэш очищен');
+              },
+              child: const Text(
+                'Очистить кэш',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     ]);
-    ;
   }
 }
 
@@ -157,7 +167,7 @@ class SettingsFriendsWidget extends StatelessWidget {
         child: Text(
           'Друзья',
           style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               color: Color(0XFF888888)),
         ),
@@ -165,24 +175,31 @@ class SettingsFriendsWidget extends StatelessWidget {
       const SizedBox(
         height: 10,
       ),
-      GestureDetector(
-        onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => QRGenerateScreen()));
-        },
-        child: const Padding(
-          padding: EdgeInsets.only(left: 27),
-          child: Text(
-            'Показать свой QR',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+      Padding(
+        padding: const EdgeInsets.only(left: 27),
+        child: Row(
+          children: [
+            const Icon(Icons.qr_code),
+            const SizedBox(
+              width: 7,
             ),
-          ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => QRGenerateScreen()));
+              },
+              child: const Text(
+                'Показать свой QR',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
-      const SizedBox(
-        height: 10,
       ),
       GestureDetector(
         onTap: () async {
@@ -203,14 +220,42 @@ class SettingsFriendsWidget extends StatelessWidget {
                 'Чат создать не удалось, либо такой чат уже сушествует.');
           }
         },
-        child: const Padding(
-          padding: EdgeInsets.only(left: 27),
-          child: Text(
-            'Сканировать QR друга',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 27),
+          child: Row(
+            children: [
+              const Icon(Icons.camera_alt_outlined),
+              const SizedBox(
+                width: 7,
+              ),
+              TextButton(
+                onPressed: () async {
+                  String barcodeScanRes;
+                  barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+                      "#38ff63", "Cancel", true, ScanMode.QR);
+                  if (barcodeScanRes != '-1' &&
+                      chatsData.every((element) =>
+                          !element.members.contains(barcodeScanRes))) {
+                    ChatService(callback: () {}).createChat(barcodeScanRes);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      AccountScreen.customSnackBar(
+                        content: 'Чат с пользователем создан',
+                      ),
+                    );
+                  } else {
+                    debugPrint(
+                        'Чат создать не удалось, либо такой чат уже сушествует.');
+                  }
+                },
+                child: const Text(
+                  'Сканировать QR друга',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -238,33 +283,37 @@ class ThemeSettingsWidget extends StatelessWidget {
         child: Text(
           'Персонализация',
           style: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               color: Color(0XFF888888)),
         ),
       ),
-      const SizedBox(
-        height: 10,
-      ),
-      GestureDetector(
-        onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const RegisterScreen()));
-        },
-        child: const Padding(
-          padding: EdgeInsets.only(left: 27),
-          child: Text(
-            'Изменить тему',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+      Padding(
+        padding: const EdgeInsets.only(left: 27),
+        child: Row(
+          children: [
+            const Icon(Icons.brush_outlined),
+            const SizedBox(
+              width: 7,
             ),
-          ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ThemesScreen()));
+              },
+              child: const Text(
+                'Изменить тему',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      const SizedBox(
-        height: 10,
-      )
     ]);
   }
 }
@@ -278,10 +327,9 @@ class SettingsDeviderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Divider(
       height: 0,
-      thickness: 1,
+      thickness: 0.7,
       indent: 0,
       endIndent: 0,
-      color: Color(0XFF1d1d1d),
     );
   }
 }
@@ -305,40 +353,53 @@ class AccountSettingsWidget extends StatelessWidget {
           child: Text(
             'Аккаунт',
             style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: Color(0XFF888888)),
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(left: 27),
-          child: Text(
-            'Добавить учетную запись',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
+        Padding(
+          padding: const EdgeInsets.only(left: 27),
+          child: Row(
+            children: [
+              const Icon(Icons.person_add_outlined),
+              const SizedBox(
+                width: 7,
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text(
+                  'Добавить учетную запись',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
-        GestureDetector(
-          onTap: () async {
-            AuthService.signOut(context: context);
-          },
-          child: const Padding(
-            padding: EdgeInsets.only(left: 27),
-            child: Text(
-              'Выйти',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
+        Padding(
+          padding: const EdgeInsets.only(left: 27),
+          child: Row(
+            children: [
+              const Icon(Icons.exit_to_app),
+              const SizedBox(
+                width: 7,
               ),
-            ),
+              TextButton(
+                onPressed: () {
+                  AuthService.signOut(context: context);
+                },
+                child: const Text(
+                  'Выйти',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(
@@ -398,13 +459,13 @@ class CircleAvatarWidget extends StatelessWidget {
           } else {
             return CircleAvatar(
               backgroundImage: snapshot.data,
-              radius: 50,
+              radius: 40,
             );
           }
         } else {
           return const CircleAvatar(
             backgroundColor: Colors.grey,
-            radius: 50,
+            radius: 40,
           );
         }
       },
