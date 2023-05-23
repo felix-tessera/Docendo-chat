@@ -132,10 +132,9 @@ class _ThemesScreenState extends State<ThemesScreen> {
 ScrollPhysics fixedExtentScrollPhysics = const FixedExtentScrollPhysics();
 ScrollController themeScrollController = FixedExtentScrollController();
 
-class ThemeItemWidget extends StatelessWidget {
-  final ColorScheme themeItemColorScheme;
-  final Color themeItemColor;
-  final String name;
+class ThemeItemWidget extends StatefulWidget {
+  @override
+  State<ThemeItemWidget> createState() => _ThemeItemWidgetState();
 
   const ThemeItemWidget({
     super.key,
@@ -144,14 +143,53 @@ class ThemeItemWidget extends StatelessWidget {
     required this.name,
   });
 
+  final ColorScheme themeItemColorScheme;
+  final Color themeItemColor;
+  final String name;
+}
+
+late AnimationController controller;
+late Animation<double> animation;
+late Animation tween;
+
+class _ThemeItemWidgetState extends State<ThemeItemWidget>
+    with TickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 100));
+    animation = CurvedAnimation(parent: controller, curve: Curves.easeInOut);
+    tween = Tween<double>(begin: 150, end: 200).animate(animation);
+
+    controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.reverse();
+      }
+    });
+    controller.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.removeListener(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         themeModel.currentTheme =
-            ThemeData.from(colorScheme: themeItemColorScheme);
+            ThemeData.from(colorScheme: widget.themeItemColorScheme);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('currentTheme', name);
+        await prefs.setString('currentTheme', widget.name);
+
+        controller.forward();
       },
       child: Padding(
         padding: const EdgeInsets.all(40.0),
@@ -161,17 +199,26 @@ class ThemeItemWidget extends StatelessWidget {
               width: 150,
               height: 150,
               decoration: BoxDecoration(
+                  border: const Border(
+                      top: BorderSide(
+                          color: Color.fromARGB(255, 220, 220, 220), width: 7),
+                      left: BorderSide(
+                          color: Color.fromARGB(255, 220, 220, 220), width: 7),
+                      right: BorderSide(
+                          color: Color.fromARGB(255, 220, 220, 220), width: 7),
+                      bottom: BorderSide(
+                          color: Color.fromARGB(255, 220, 220, 220), width: 7)),
                   borderRadius: BorderRadius.circular(100),
                   gradient: LinearGradient(begin: Alignment.topLeft, colors: [
-                    themeItemColorScheme.primary,
-                    themeItemColorScheme.secondary
+                    widget.themeItemColorScheme.primary,
+                    widget.themeItemColorScheme.secondary
                   ])),
             ),
             const SizedBox(
               width: 10,
             ),
             Text(
-              name,
+              widget.name,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             )
           ],

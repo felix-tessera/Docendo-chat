@@ -35,6 +35,8 @@ class _NewsScreenState extends State<NewsScreen> {
                         itemCount: httpHabs.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Card(
+                            color:
+                                themeModel.currentTheme.colorScheme.background,
                             elevation: 15,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15.0)),

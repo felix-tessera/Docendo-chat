@@ -40,7 +40,14 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     ChatService(callback: () {}).getChats(mounted);
+    themeModel.addListener(_accountUpdate);
     super.initState();
+  }
+
+  _accountUpdate() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -87,10 +94,29 @@ class _AccountScreenState extends State<AccountScreen> {
           const SizedBox(
             height: 11,
           ),
-          const AccountSettingsWidget(),
-          const ThemeSettingsWidget(),
-          const SettingsFriendsWidget(),
-          const MemorySettingsWidget()
+          Expanded(
+            child: ListView(
+              children: [
+                Card(
+                  color: themeModel.currentTheme.colorScheme.background,
+                  elevation: 5,
+                  child: const AccountSettingsWidget(),
+                ),
+                Card(
+                    color: themeModel.currentTheme.colorScheme.background,
+                    elevation: 5,
+                    child: const ThemeSettingsWidget()),
+                Card(
+                    color: themeModel.currentTheme.colorScheme.background,
+                    elevation: 5,
+                    child: const SettingsFriendsWidget()),
+                Card(
+                    color: themeModel.currentTheme.colorScheme.background,
+                    elevation: 5,
+                    child: const MemorySettingsWidget())
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -103,7 +129,6 @@ class MemorySettingsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SettingsDeviderWidget(),
       const SizedBox(
         height: 10,
       ),
@@ -158,7 +183,6 @@ class SettingsFriendsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SettingsDeviderWidget(),
       const SizedBox(
         height: 10,
       ),
@@ -274,7 +298,6 @@ class ThemeSettingsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SettingsDeviderWidget(),
       const SizedBox(
         height: 10,
       ),
@@ -344,7 +367,6 @@ class AccountSettingsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SettingsDeviderWidget(),
         const SizedBox(
           height: 10,
         ),
