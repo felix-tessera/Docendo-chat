@@ -1,4 +1,5 @@
 import 'package:docendo_chat/screens/main_screen.dart';
+import 'package:docendo_chat/services/theme_service.dart';
 import 'package:docendo_chat/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,22 +15,49 @@ class AuthScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Image.asset(
-                'assets/images/docendo_logo.png',
+            Container(
+              width: double.infinity,
+              height: 300,
+              decoration: BoxDecoration(
+                  color: themeModel.currentTheme.colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(150),
+                      bottomRight: Radius.circular(150))),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Image.asset(
+                  'assets/images/docendo_logo.png',
+                ),
               ),
             ),
             const Center(
-              child: Text(
-                'Вход',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100,
+                  ),
+                  Text(
+                    'Docendo Chat',
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    'Connecting Minds, Sharing Knowledge!',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                ],
               ),
             ),
             const SizedBox(
               height: 30,
             ),
+            Spacer(),
             SignInButtonWidget(),
+            SizedBox(
+              height: 30,
+            )
           ],
         ),
       ),
