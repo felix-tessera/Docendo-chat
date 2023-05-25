@@ -1,3 +1,4 @@
+import 'package:docendo_chat/screens/help_screen.dart';
 import 'package:docendo_chat/screens/messages_screen.dart';
 import 'package:docendo_chat/screens/qr_generate_screen.dart';
 import 'package:docendo_chat/screens/themes_screen.dart';
@@ -55,6 +56,20 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Профиль'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: IconButton(
+              icon: const Icon(Icons.help),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const HelpScreen()));
+              },
+            ),
+          )
+        ],
         centerTitle: true,
         elevation: 0,
       ),

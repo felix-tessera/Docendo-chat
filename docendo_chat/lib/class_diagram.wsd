@@ -1,0 +1,377 @@
+@startuml
+set namespaceSeparator ::
+
+class "docendo_chat::firebase_options.dart::DefaultFirebaseOptions" {
+  {static} +FirebaseOptions web
+  {static} +FirebaseOptions android
+  {static} +FirebaseOptions ios
+  {static} +FirebaseOptions macos
+  {static} +FirebaseOptions currentPlatform
+}
+
+"docendo_chat::firebase_options.dart::DefaultFirebaseOptions" o-- "firebase_core_platform_interface::firebase_core_platform_interface.dart::FirebaseOptions"
+
+class "docendo_chat::main.dart::MyApp" {
+  +State<MyApp> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::main.dart::MyApp"
+
+class "docendo_chat::main.dart::_MyAppState" {
+  +void initState()
+  -dynamic _updTheme()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::main.dart::_MyAppState"
+
+class "docendo_chat::models::chat.dart::Chat" {
+  +String key
+  +List<String> members
+  +String lastMessage
+  +String lastMessageTime
+  {static} +Chat fromJson()
+}
+
+class "docendo_chat::models::message.dart::Message" {
+  +String message
+  +String time
+  +String sender
+  {static} +Message fromJson()
+}
+
+class "docendo_chat::models::user.dart::User" {
+  +String key
+  +String name
+  +String mail
+  +String imageUrl
+  +List<String?> friends
+  +String token
+  +Map<String, dynamic> toJson()
+  {static} +User fromJson()
+}
+
+class "docendo_chat::screens::account_screen.dart::AccountScreen" {
+  +User? user
+  {static} +SnackBar customSnackBar()
+  +State<AccountScreen> createState()
+}
+
+"docendo_chat::screens::account_screen.dart::AccountScreen" o-- "firebase_auth::firebase_auth.dart::User"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::account_screen.dart::AccountScreen"
+class "docendo_chat::screens::account_screen.dart::_AccountScreenState" {
+  +User? user
+  +DefaultCacheManager manager
+  +void initState()
+  -dynamic _accountUpdate()
+  +Widget build()
+}
+
+"docendo_chat::screens::account_screen.dart::_AccountScreenState" o-- "firebase_auth::firebase_auth.dart::User"
+"docendo_chat::screens::account_screen.dart::_AccountScreenState" o-- "flutter_cache_manager::src::cache_managers::default_cache_manager.dart::DefaultCacheManager"
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::account_screen.dart::_AccountScreenState"
+
+class "docendo_chat::screens::account_screen.dart::MemorySettingsWidget" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::account_screen.dart::MemorySettingsWidget"
+
+class "docendo_chat::screens::account_screen.dart::SettingsFriendsWidget" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::account_screen.dart::SettingsFriendsWidget"
+
+class "docendo_chat::screens::account_screen.dart::ThemeSettingsWidget" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::account_screen.dart::ThemeSettingsWidget"
+
+class "docendo_chat::screens::account_screen.dart::SettingsDeviderWidget" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::account_screen.dart::SettingsDeviderWidget"
+
+class "docendo_chat::screens::account_screen.dart::AccountSettingsWidget" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::account_screen.dart::AccountSettingsWidget"
+
+class "docendo_chat::screens::account_screen.dart::CircleAvatarWidget" {
+  +String imageUrl
+  +dynamic getImageFile()
+  +dynamic getCachedImage()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::account_screen.dart::CircleAvatarWidget"
+
+class "docendo_chat::screens::auth_screen.dart::AuthScreen" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::auth_screen.dart::AuthScreen"
+
+class "docendo_chat::screens::auth_screen.dart::SignInButtonWidget" {
+  +DatabaseReference usersRef
+  +Widget build()
+}
+
+"docendo_chat::screens::auth_screen.dart::SignInButtonWidget" o-- "firebase_database::firebase_database.dart::DatabaseReference"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::auth_screen.dart::SignInButtonWidget"
+
+class "docendo_chat::screens::chat_screen.dart::ChatScreen" {
+  +User? friend
+  +Chat chat
+  +State<ChatScreen> createState()
+}
+
+"docendo_chat::screens::chat_screen.dart::ChatScreen" o-- "docendo_chat::models::user.dart::User"
+"docendo_chat::screens::chat_screen.dart::ChatScreen" o-- "docendo_chat::models::chat.dart::Chat"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::chat_screen.dart::ChatScreen"
+
+class "docendo_chat::screens::chat_screen.dart::_ChatScreenState" {
+  +User? friend
+  +Chat chat
+  -bool _showFloatingActionButton
+  +List<Message> messages
+  +List<Widget> messagesWidgets
+  -TextEditingController _textEditingController
+  -ScrollController _scrollController
+  +void initState()
+  -ImageProvider<Object> _setFriendAvatar()
+  -Widget _setFriendName()
+  +dynamic getMessages()
+  -dynamic _scrollToDown()
+  +void dispose()
+  +Widget build()
+}
+
+"docendo_chat::screens::chat_screen.dart::_ChatScreenState" o-- "docendo_chat::models::user.dart::User"
+"docendo_chat::screens::chat_screen.dart::_ChatScreenState" o-- "docendo_chat::models::chat.dart::Chat"
+"docendo_chat::screens::chat_screen.dart::_ChatScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"docendo_chat::screens::chat_screen.dart::_ChatScreenState" o-- "flutter::src::widgets::scroll_controller.dart::ScrollController"
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::chat_screen.dart::_ChatScreenState"
+
+class "docendo_chat::screens::chat_screen.dart::MessageWidget" {
+  +Message message
+  +dynamic getMessageAlign()
+  +dynamic getMessageColor()
+  +dynamic getBoxDecoration()
+  +Widget build()
+}
+
+"docendo_chat::screens::chat_screen.dart::MessageWidget" o-- "docendo_chat::models::message.dart::Message"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::chat_screen.dart::MessageWidget"
+
+class "docendo_chat::screens::check_connection_screen.dart::CheckConnectionSceen" {
+  +State<CheckConnectionSceen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::check_connection_screen.dart::CheckConnectionSceen"
+
+class "docendo_chat::screens::check_connection_screen.dart::_CheckConnectionScreenState" {
+  +DatabaseReference ref
+  +Widget checkData
+  +void initState()
+  -dynamic _checkConnection()
+  +Widget build()
+}
+
+"docendo_chat::screens::check_connection_screen.dart::_CheckConnectionScreenState" o-- "firebase_database::firebase_database.dart::DatabaseReference"
+"docendo_chat::screens::check_connection_screen.dart::_CheckConnectionScreenState" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::check_connection_screen.dart::_CheckConnectionScreenState"
+
+class "docendo_chat::screens::main_screen.dart::MainScreen" {
+  +User? user
+  +State<MainScreen> createState()
+}
+
+"docendo_chat::screens::main_screen.dart::MainScreen" o-- "firebase_auth::firebase_auth.dart::User"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::main_screen.dart::MainScreen"
+
+class "docendo_chat::screens::main_screen.dart::_MainScreenState" {
+  -int _selectedIndex
+  +User? user
+  -List<Widget> _pages
+  +void initState()
+  -dynamic _initPages()
+  +Widget build()
+}
+
+"docendo_chat::screens::main_screen.dart::_MainScreenState" o-- "firebase_auth::firebase_auth.dart::User"
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::main_screen.dart::_MainScreenState"
+
+class "docendo_chat::screens::messages_screen.dart::MassagesScreen" {
+  +State<MassagesScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::messages_screen.dart::MassagesScreen"
+
+class "docendo_chat::screens::messages_screen.dart::_MassagesScreenState" {
+  +User? user
+  -bool _searching
+  +User? friend
+  -dynamic _toggleSearch()
+  +dynamic loadData()
+  +void initState()
+  +Widget build()
+}
+
+"docendo_chat::screens::messages_screen.dart::_MassagesScreenState" o-- "firebase_auth::firebase_auth.dart::User"
+"docendo_chat::screens::messages_screen.dart::_MassagesScreenState" o-- "docendo_chat::models::user.dart::User"
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::messages_screen.dart::_MassagesScreenState"
+
+class "docendo_chat::screens::messages_screen.dart::ChatWidget" {
+  +Chat chat
+  +State<ChatWidget> createState()
+}
+
+"docendo_chat::screens::messages_screen.dart::ChatWidget" o-- "docendo_chat::models::chat.dart::Chat"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::messages_screen.dart::ChatWidget"
+
+class "docendo_chat::screens::messages_screen.dart::_ChatWidgetState" {
+  +User? friend
+  +Chat chat
+  +void initState()
+  +dynamic getCurrentChatFriend()
+  -dynamic _getCachedImage()
+  -Widget _getCircleAvatar()
+  -Widget _setFriendName()
+  +Widget build()
+}
+
+"docendo_chat::screens::messages_screen.dart::_ChatWidgetState" o-- "docendo_chat::models::user.dart::User"
+"docendo_chat::screens::messages_screen.dart::_ChatWidgetState" o-- "docendo_chat::models::chat.dart::Chat"
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::messages_screen.dart::_ChatWidgetState"
+
+class "docendo_chat::screens::messages_screen.dart::FindedFriendWidget" {
+  +User? friend
+  +Widget build()
+}
+
+"docendo_chat::screens::messages_screen.dart::FindedFriendWidget" o-- "docendo_chat::models::user.dart::User"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::messages_screen.dart::FindedFriendWidget"
+
+class "docendo_chat::screens::messages_screen.dart::FindedFriendTile" {
+  +User? friend
+  +IconData addIcon
+  -ImageProvider<Object> _setFriendAvatar()
+  -Widget _setFriendName()
+  +Widget build()
+}
+
+"docendo_chat::screens::messages_screen.dart::FindedFriendTile" o-- "docendo_chat::models::user.dart::User"
+"docendo_chat::screens::messages_screen.dart::FindedFriendTile" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "docendo_chat::screens::messages_screen.dart::FindedFriendTile"
+
+class "docendo_chat::screens::news_screen.dart::NewsScreen" {
+  +State<NewsScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::news_screen.dart::NewsScreen"
+
+class "docendo_chat::screens::news_screen.dart::_NewsScreenState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::news_screen.dart::_NewsScreenState"
+
+class "docendo_chat::screens::qr_generate_screen.dart::QRGenerateScreen" {
+  +State<QRGenerateScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::qr_generate_screen.dart::QRGenerateScreen"
+
+class "docendo_chat::screens::qr_generate_screen.dart::_QRGenerateScreenState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::qr_generate_screen.dart::_QRGenerateScreenState"
+
+class "docendo_chat::screens::themes_screen.dart::ThemesScreen" {
+  +State<ThemesScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::themes_screen.dart::ThemesScreen"
+
+class "docendo_chat::screens::themes_screen.dart::_ThemesScreenState" {
+  +String title
+  +List<Color> colors
+  +ScrollController scrollController
+  +List<Widget> themeItems
+  +void dispose()
+  +void initState()
+  +List<Widget> generateThemeItems()
+  +Widget build()
+}
+
+"docendo_chat::screens::themes_screen.dart::_ThemesScreenState" o-- "flutter::src::widgets::scroll_controller.dart::ScrollController"
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::themes_screen.dart::_ThemesScreenState"
+
+class "docendo_chat::screens::themes_screen.dart::ThemeItemWidget" {
+  +ColorScheme themeItemColorScheme
+  +Color themeItemColor
+  +String name
+  +State<ThemeItemWidget> createState()
+}
+
+"docendo_chat::screens::themes_screen.dart::ThemeItemWidget" o-- "flutter::src::material::color_scheme.dart::ColorScheme"
+"docendo_chat::screens::themes_screen.dart::ThemeItemWidget" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "docendo_chat::screens::themes_screen.dart::ThemeItemWidget"
+
+class "docendo_chat::screens::themes_screen.dart::_ThemeItemWidgetState" {
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "docendo_chat::screens::themes_screen.dart::_ThemeItemWidgetState"
+"flutter::src::widgets::ticker_provider.dart::TickerProviderStateMixin" <|-- "docendo_chat::screens::themes_screen.dart::_ThemeItemWidgetState"
+
+class "docendo_chat::services::auth_service.dart::AuthService" {
+  {static} +dynamic signInWithGoogle()
+  {static} +dynamic signOut()
+}
+
+class "docendo_chat::services::chat_service.dart::ChatService" {
+  +Function callback
+  +DatabaseReference createChatRef
+  +User? currentUser
+  +dynamic createChat()
+  +dynamic getChats()
+  +dynamic sendMessage()
+  +dynamic getLastMessage()
+}
+
+"docendo_chat::services::chat_service.dart::ChatService" o-- "firebase_database::firebase_database.dart::DatabaseReference"
+"docendo_chat::services::chat_service.dart::ChatService" o-- "firebase_auth::firebase_auth.dart::User"
+
+class "docendo_chat::services::notification_service.dart::NotificationSerivce" {
+  +dynamic sendNotificationOnMessage()
+}
+
+class "docendo_chat::services::theme_service.dart::ThemeModel" {
+  -ThemeData _currentTheme
+  +ThemeData currentTheme
+  -dynamic _getCurrentTheme()
+}
+
+"docendo_chat::services::theme_service.dart::ThemeModel" o-- "flutter::src::material::theme_data.dart::ThemeData"
+"property_change_notifier::src::property_change_notifier.dart::PropertyChangeNotifier" <|-- "docendo_chat::services::theme_service.dart::ThemeModel"
+
+class "docendo_chat::services::user_service.dart::UserService" {
+  +DatabaseReference usersRef
+  +DatabaseReference keyRef
+  +User? user
+  +dynamic postUser()
+  +dynamic searchFriend()
+  +dynamic searchFriendForChats()
+}
+
+"docendo_chat::services::user_service.dart::UserService" o-- "firebase_database::firebase_database.dart::DatabaseReference"
+"docendo_chat::services::user_service.dart::UserService" o-- "firebase_auth::firebase_auth.dart::User"
