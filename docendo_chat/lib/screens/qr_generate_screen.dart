@@ -1,3 +1,4 @@
+import 'package:docendo_chat/services/theme_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -14,7 +15,7 @@ class _QRGenerateScreenState extends State<QRGenerateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR'),
+        title: const Text('QR'),
         centerTitle: true,
       ),
       body: Padding(
@@ -22,7 +23,7 @@ class _QRGenerateScreenState extends State<QRGenerateScreen> {
         child: QrImage(
           data: (FirebaseAuth.instance.currentUser?.email).toString(),
           version: QrVersions.auto,
-          foregroundColor: Colors.black,
+          foregroundColor: themeModel.currentTheme.colorScheme.primary,
           embeddedImage:
               const AssetImage('assets/images/docendo_ellipse_logo.png'),
           embeddedImageStyle: QrEmbeddedImageStyle(size: const Size(40, 40)),

@@ -21,7 +21,8 @@ class ChatService {
     createChatPush.set({
       'key': createChatPush.key,
       'members': [friendEmail, (currentUser?.email).toString()],
-      'lastMessage': ''
+      'lastMessage': '',
+      'lastMessageTime': '',
     });
   }
 
@@ -45,6 +46,7 @@ class ChatService {
           final messageMap = jsonDecode(lastMessageJson);
           Message lastMessage = Message.fromJson(messageMap);
           chat.lastMessage = lastMessage.message;
+          chat.lastMessageTime = lastMessage.time;
           if (mounted) {
             callback();
           }

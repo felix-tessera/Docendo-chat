@@ -1,4 +1,6 @@
+import 'package:docendo_chat/services/theme_service.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/news_service.dart';
 
 class NewsScreen extends StatefulWidget {
@@ -33,12 +35,15 @@ class _NewsScreenState extends State<NewsScreen> {
                         itemCount: httpHabs.length,
                         itemBuilder: (BuildContext context, int index) {
                           return Card(
-                            elevation: 9,
+                            color:
+                                themeModel.currentTheme.colorScheme.background,
+                            elevation: 15,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
+                                borderRadius: BorderRadius.circular(15.0)),
                             child: Padding(
-                              padding: const EdgeInsets.all(6.0),
+                              padding: const EdgeInsets.all(10.0),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     httpHabs[index].title,
@@ -50,7 +55,23 @@ class _NewsScreenState extends State<NewsScreen> {
                                     height: 10,
                                   ),
                                   Text(parseDescription(
-                                      httpHabs[index].description))
+                                      httpHabs[index].description)),
+                                  TextButton(
+                                      onPressed: () {
+                                        String url =
+                                            httpHabs[index].link; // ваша ссылка
+                                        launch(url);
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: themeModel.currentTheme
+                                                      .colorScheme.primary,
+                                                  width: 2),
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                          child:
+                                              Icon(Icons.arrow_forward_sharp)))
                                 ],
                               ),
                             ),

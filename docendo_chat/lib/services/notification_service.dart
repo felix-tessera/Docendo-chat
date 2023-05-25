@@ -14,7 +14,10 @@ class NotificationSerivce {
       'Authorization': 'key=$serverToken',
     };
     final body = jsonEncode({
-      'notification': {'title': title, 'body': message},
+      'notification': {
+        'title': title,
+        'body': message,
+      },
       'to': token,
     });
 
