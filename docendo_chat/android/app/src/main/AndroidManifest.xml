@@ -10,7 +10,7 @@
    <application
         android:label="Docendo Chat"
         android:name="${applicationName}"
-        android:icon="@mipmap/ico">
+        android:icon="@mipmap/ico2">
         <activity
             android:name=".MainActivity"
             android:exported="true"

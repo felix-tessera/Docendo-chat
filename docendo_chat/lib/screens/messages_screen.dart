@@ -135,7 +135,7 @@ class _ChatWidgetState extends State<ChatWidget> {
           .getSingleFile((friend?.imageUrl).toString());
       return Image.file(file).image;
     } else {
-      return Image.asset('assets/images/docendo_logo_avatar.png').image;
+      return Image.asset('assets/images/main_logo.png').image;
     }
   }
 
@@ -151,13 +151,12 @@ class _ChatWidgetState extends State<ChatWidget> {
             } else {
               return CircleAvatar(
                 backgroundImage:
-                    Image.asset('assets/images/docendo_logo_avatar.png').image,
+                    Image.asset('assets/images/main_logo.png').image,
               );
             }
           } else {
             return CircleAvatar(
-              backgroundImage:
-                  Image.asset('assets/images/docendo_logo_avatar.png').image,
+              backgroundImage: Image.asset('assets/images/main_logo.png').image,
             );
           }
         });
@@ -255,7 +254,7 @@ class FindedFriendTile extends StatelessWidget {
   FindedFriendTile({super.key, required this.friend});
   ImageProvider _setFriendAvatar() {
     if ((friend?.imageUrl) == null) {
-      return Image.asset('assets/images/docendo_logo_avatar.png').image;
+      return Image.asset('assets/images/main_logo.png').image;
     } else {
       return Image.network((friend?.imageUrl).toString()).image;
     }

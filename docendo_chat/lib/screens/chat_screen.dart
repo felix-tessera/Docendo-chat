@@ -39,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   ImageProvider _setFriendAvatar() {
     if ((friend?.imageUrl) == null) {
-      return Image.asset('assets/images/docendo_logo_avatar.png').image;
+      return Image.asset('assets/images/main_logo.png').image;
     } else {
       return Image.network((friend?.imageUrl).toString()).image;
     }

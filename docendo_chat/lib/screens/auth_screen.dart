@@ -26,7 +26,7 @@ class AuthScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Image.asset(
-                  'assets/images/docendo_logo.png',
+                  'assets/images/main_logo.png',
                 ),
               ),
             ),
